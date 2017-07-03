@@ -1,53 +1,56 @@
-lazy_seq = function(src, def) {
-		if (src === undefined || def === undefined) {
-			throw 'illegal count of arguments - expected 2';
-		}
+lazy_seq = function(first, second) {
+    let arr;
+    let def;
+    
+    if (typeof first === 'function') {
+      arr = [];
+      def = first;
+    } else {
+      arr = Object.assign([], first.array || first);
+      arr.length = first.length;
+      def = second;
+    }
 
-		if (!src instanceof Array && !src.arr instanceof Array) {
-			throw 'illegal argument one of lazy_seq';
-		}
-
-		if (typeof def !== 'function') {
-			throw 'illegal argument two of lazy_seq';
-		}
-
-		// set correct input
-		let arr = Object.assign([], src instanceof Array ? src : src.arr);
-		if (src.len !== undefined) {
-			arr.length = src.len;
-	   }
-
-		let sequence = new Proxy(
+		return new Proxy(
 		  {
 			  at: (n) => arr[n],
 
-			  map: (def, scope) => arr.map(def, scope),
+        map: Array.prototype.map.bind(arr),
+			  //map: (def, scope) => arr.map(def, scope),
 
-			  forEach: (def, scope) => arr.forEach(def, scope),
+        forEach: Array.prototype.forEach.bind(arr),
+			  //forEach: (def, scope) => arr.forEach(def, scope),
 
 			  toArray: () => Object.assign([], arr),
 
-			  filter: (condition, scope) => arr.filter(condition, scope),
+        filter: Array.prototype.filter.bind(arr),
+			  //filter: (condition, scope) => arr.filter(condition, scope),
 
-			  fillAll: () =>
-				  for (let i = 0; i < arr.length; i++) {
-					  sequence[i];
-					},
+			  fillAll: () => {
+          for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === undefined) {
+              arr[i] = def(i);
+            }
+					}
+        },
 
 			  inRange: (n) => n >= 0 && n < arr.length,
 
 			  typeOf: () => 'LazySequence',
-	   	},
+
+      },
 		  {
 			  has: (target, prop) => (prop in target || prop in arr),
 
 			  get: (target, prop) => {
+          if (prop === 'length') {
+            return arr.length;
+          }
 				  if (prop in target) {
 					  return target[prop];
 					}
 
-					let n = Number.parseInt(prop);
-
+					let n = Number(prop);
 					let validIndex = Number.isFinite(n) && n >= 0;
 
 					if (!validIndex) {
@@ -59,7 +62,23 @@ lazy_seq = function(src, def) {
 					}
 					return arr[n];
 			   },
-			  set: () => throw 'malicious assignment into forbiden lazy property'
-		  });
-		return sequence;
+			  set: (target, prop, value) => {
+          if (prop === 'length') {
+            return arr.length = value;
+          }
+    
+          throw 'malicious assignment into forbiden lazy property';
+        },
+ 
+        deleteProperty: (target, prop) => {
+          let n = Number(prop);
+					let validIndex = Number.isFinite(n) && n >= 0;
+
+          if (!validIndex) {
+            throw 'illegal delete of property ' + prop;
+          }
+          
+          arr[n] = undefined;
+        },
+		  })
 	};
