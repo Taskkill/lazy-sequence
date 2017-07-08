@@ -1,0 +1,25 @@
+{
+  "name": "lazy-sequence",
+  "version": "0.0.1",
+  "description": "lazy array-based sequences",
+  "main": "main.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Taskkill/lazy-sequence.git"
+  },
+  "keywords": [
+    "lazy",
+    "array",
+    "sequence",
+    "functional"
+  ],
+  "author": "Taskkill",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Taskkill/lazy-sequence/issues"
+  },
+  "homepage": "https://github.com/Taskkill/lazy-sequence#readme"
+}
