@@ -1,42 +1,26 @@
-const lazy_seq = require("./main.js");
+"use strict";
 
-let lazy = lazy_seq([0, 1], function(n) {
-  return lazy[n - 1] + lazy[n - 2];
+var lazy = require("./main.es6.js");
+
+var fib = lazy([0, 1], function (n) {
+  return fib[n - 1] + fib[n - 2];
 });
-console.log('result   ' + lazy[4]);
-console.log(lazy.toArray());
 
-let smart = lazy_seq({
-  array: [0, 1],
-  length: 10
-}, (n) => smart[n - 1] + smart[n - 2]);
-console.log('smart ' + smart[4]);
+console.log(0 in fib === true // true
+);console.log(3 in fib === false // false
 
-console.log(smart.toArray());
-console.log(smart.inRange(3));
-smart.fillAll();
+);console.log(fib[3]); // 2
 
-console.log(smart.toArray());
+console.log(fib[9]); // 34
 
-try {
-  smart[3] = 23;
-} catch (ex) {
-  console.log(ex);
-}
+console.log(fib[70]); // 190392490709135
 
-console.log(smart.toArray());
+var even = lazy(function (n) {
+  return 2 * n;
+});
 
-console.log(smart.map(val => 2 * val));
+even[0]; // 0
+even[1]; // 2
+even[3]; // 6
 
-console.log();
-
-try {
-  //console.log(smart[-1]);
-  //console.log(smart['quark']);
-  console.log(smart[20]);
-} catch (ex) {
-  console.log(ex);
-}
-
-console.log(smart.toArray().length);
-console.log(smart.toArray());
+console.log(even.toArray()); // [0, 2, ,6]

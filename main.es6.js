@@ -1,8 +1,6 @@
-'use strict';
-
-module.exports = function (first, second) {
-  var arr = void 0;
-  var def = void 0;
+module.exports = (first, second) => {
+  let arr;
+  let def;
 
   if (typeof first === 'function') {
     arr = [];
@@ -14,17 +12,11 @@ module.exports = function (first, second) {
   }
 
   return new Proxy({
-    at: function at(n) {
-      return arr[n];
-    },
+    at: (n) => arr[n],
 
-    inRange: function inRange(n) {
-      return n >= 0 && n < arr.length;
-    },
+    inRange: (n) => n >= 0 && n < arr.length,
 
-    toArray: function toArray() {
-      return Object.assign([], arr);
-    },
+    toArray: () => Object.assign([], arr),
 
     map: Array.prototype.map.bind(arr),
 
@@ -32,24 +24,20 @@ module.exports = function (first, second) {
 
     filter: Array.prototype.filter.bind(arr),
 
-    fillAll: function fillAll() {
-      for (var i = 0; i < arr.length; i++) {
+    fillAll: () => {
+      for (let i = 0; i < arr.length; i++) {
         if (arr[i] === undefined) {
           arr[i] = def(i);
         }
       }
     },
 
-    typeOf: function typeOf() {
-      return 'LazySequence';
-    }
+    typeOf: () => 'LazySequence',
 
   }, {
-    has: function has(target, prop) {
-      return prop in target || prop in arr;
-    },
+    has: (target, prop) => (prop in target || prop in arr),
 
-    get: function get(target, prop) {
+    get: (target, prop) => {
       if (prop === 'length') {
         return arr.length;
       }
@@ -57,8 +45,8 @@ module.exports = function (first, second) {
         return target[prop];
       }
 
-      var n = Number(prop);
-      var validIndex = Number.isFinite(n) && n >= 0;
+      let n = Number(prop);
+      let validIndex = Number.isFinite(n) && n >= 0;
 
       if (!validIndex) {
         throw 'unexpected property ' + prop;
@@ -69,7 +57,7 @@ module.exports = function (first, second) {
       }
       return arr[n];
     },
-    set: function set(target, prop, value) {
+    set: (target, prop, value) => {
       if (prop === 'length') {
         return arr.length = value;
       }
@@ -77,15 +65,15 @@ module.exports = function (first, second) {
       throw 'lazy-sequence error - malicious assignment into forbiden lazy property';
     },
 
-    deleteProperty: function deleteProperty(target, prop) {
-      var n = Number(prop);
-      var validIndex = Number.isFinite(n) && n >= 0;
+    deleteProperty: (target, prop) => {
+      let n = Number(prop);
+      let validIndex = Number.isFinite(n) && n >= 0;
 
       if (!validIndex) {
         throw 'lazy-sequence error - illegal delete of property ' + prop;
       }
 
       arr[n] = undefined;
-    }
-  });
-};
+    },
+  })
+}
