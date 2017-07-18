@@ -87,3 +87,5 @@ Example of usage:
 
 # It relies on Proxy - make sure Proxy is a present - native or some standard pollyfill!
 But also it's transpiled with babel for backward compatibility.
+
+## DOCs will come soon.
